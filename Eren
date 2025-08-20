@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Özür Mesajı — Barıştık mı?</title>
+  <style>
+    :root{
+      --bg:#0f172a;          /* gece laciverti */
+      --card:#111827;        /* koyu gri */
+      --text:#e5e7eb;        /* açık gri */
+      --muted:#9ca3af;       /* orta gri */
+      --accent:#22c55e;      /* yeşil (evet) */
+      --danger:#ef4444;      /* kırmızı (hayır) */
+      --evet-scale:1;
+      --hayir-scale:1;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 800px at 70% 0%, #1f2937 0%, var(--bg) 50%);
+      color:var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+      display:grid;
+      place-items:center;
+      padding:24px;
+    }
+
+    .card{
+      width:min(820px, 100%);
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:20px;
+      padding:28px 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+      position:relative;
+      overflow:hidden;
+    }
+
+    h1{
+      margin:0 0 12px;
+      font-size: clamp(26px, 3.4vw, 36px);
+      line-height:1.1;
+    }
+    .lead{
+      color:var(--muted);
+      margin:0 0 18px;
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+
+    .notes{
+      display:grid;
+      gap:10px;
+      margin:18px 0 22px;
+    }
+    .note{
+      padding:12px 14px;
+      background:#0b1220;
+      border:1px dashed rgba(255,255,255,.12);
+      border-radius:12px;
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+
+    .q{
+      margin-top:8px;
+      padding-top:14px;
+      border-top:1px solid rgba(255,255,255,.08);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .q p{
+      margin:0;
+      font-weight:600;
+      font-size: clamp(18px, 3vw, 22px);
+    }
+
+    .actions{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:0;
+      padding:14px 18px;
+      border-radius:12px;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      will-change: transform;
+      user-select:none;
+    }
+
+    #btn-evet{
+      background:var(--accent);
+      color:#052e12;
+      box-shadow: 0 10px 24px rgba(34,197,94,.3);
+      transform: scale(var(--evet-scale));
+    }
+    #btn-evet:active{ transform: scale(calc(var(--evet-scale) * .97)); }
+
+    #btn-hayir{
+      background:var(--danger);
+      color:#fff5f5;
+      box-shadow: 0 10px 24px rgba(239,68,68,.28);
+      transform: scale(var(--hayir-scale));
+    }
+    #btn-hayir:active{ transform: scale(calc(var(--hayir-scale) * .96)); }
+
+    .footer-hint{
+      margin-top:14px;
+      font-size:12px;
+      color:var(--muted);
+      opacity:.8;
+    }
+
+    /* Başarı ekranı */
+    .success{
+      position:absolute;
+      inset:0;
+      background: radial-gradient(900px 600px at 30% 10%, #16a34a22 0%, transparent 50%), rgba(2,6,23,.86);
+      display:grid;
+      place-items:center;
+      padding:24px;
+      transform: scale(.98);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .35s ease, transform .35s ease;
+    }
+    .success.show{
+      opacity:1;
+      transform: scale(1);
+      pointer-events:auto;
+    }
+    .success .box{
+      text-align:center;
+      background: linear-gradient(180deg, rgba(34,197,94,.12), rgba(34,197,94,.08));
+      border:1px solid rgba(34,197,94,.35);
+      border-radius:20px;
+      padding:28px 22px;
+      max-width:520px;
+    }
+    .success h2{
+      margin:0 0 6px;
+      font-size: clamp(26px, 3.6vw, 40px);
+    }
+    .success p{ margin:6px 0 0; color:#d1fae5 }
+
+    /* Basit konfeti */
+    .confetti{
+      position:absolute; inset:0; overflow:hidden; pointer-events:none;
+    }
+    .piece{
+      position:absolute; width:10px; height:18px;
+      top:-20px; left:50%;
+      background: white;
+      opacity:.95;
+      animation: fall linear forwards;
+    }
+    @keyframes fall{
+      to{ transform: translate(var(--x), 110vh) rotate(var(--r)); }
+    }
+
+    /* Küçük ekran düzenleme */
+    @media (max-width:420px){
+      .actions{ gap:10px }
+      button{ padding:12px 14px }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" id="card">
+    <h1>Seni üzdüğüm için <em>özür dilerim</em> 💔</h1>
+    <p class="lead">Kalbini kırdıysam affına sığınıyorum. Aşağıya birkaç küçük not bıraktım…</p>
+
+    <section class="notes" aria-label="Özür notları">
+      <div class="note">Söz veriyorum, seni dinlemeye daha çok özen göstereceğim.</div>
+      <div class="note">Hatalarımı sahipleniyorum ve telafi etmek istiyorum.</div>
+      <div class="note">Varlığın benim için gerçekten çok değerli.</div>
+    </section>
+
+    <div class="q">
+      <p>Barıştık mı?</p>
+      <div class="actions">
+        <button id="btn-evet" aria-label="Evet, barıştık">Evet ✅</button>
+        <button id="btn-hayir" aria-label="Hayır, barışmadık">Hayır ❌</button>
+      </div>
+    </div>
+
+    <div class="footer-hint">İpucu: “Hayır” dersen bir şeyler… büyüyebilir 🙈</div>
+
+    <!-- Başarı ekranı -->
+    <section class="success" id="success" aria-live="polite" aria-hidden="true">
+      <div class="confetti" id="confetti"></div>
+      <div class="box">
+        <h2>Barıştık! 🤝💚</h2>
+        <p>Teşekkür ederim. Bundan sonra daha dikkatli, daha anlayışlı olacağım.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const root = document.documentElement;
+      const btnEvet = document.getElementById('btn-evet');
+      const btnHayir = document.getElementById('btn-hayir');
+      const success = document.getElementById('success');
+      const confettiWrap = document.getElementById('confetti');
+
+      let evetScale = 1;
+      let hayirScale = 1;
+      let noClicks = 0;
+      const maxScale = 7; // Evet en fazla bu kadar büyüsün
+
+      function updateScales(){
+        root.style.setProperty('--evet-scale', evetScale.toFixed(3));
+        root.style.setProperty('--hayir-scale', hayirScale.toFixed(3));
+      }
+
+      function nudgeButtons(){
+        // “Hayır”a basıldıkça Evet büyür, Hayır ufalır ve titrer
+        evetScale = Math.min(maxScale, 1 + noClicks * 0.45);
+        hayirScale = Math.max(.6, 1 - noClicks * 0.06);
+        updateScales();
+
+        // Hayır butonunu hafif kaçır
+        const jitter = Math.min(20 + noClicks * 4, 120);
+        btnHayir.style.transform = `scale(${hayirScale}) translate(${rand(-jitter,jitter)}px, ${rand(-jitter,jitter)}px) rotate(${rand(-6,6)}deg)`;
+        btnHayir.style.opacity = (1 - Math.min(noClicks*0.05, .5)).toFixed(2);
+
+        // Evet'e basmayı "zorunlu" hissettirmek için odak ver
+        if (evetScale > 1.8) btnEvet.focus();
+
+        // Yeterince büyüyünce Hayır'ı devre dışı bırak
+        if (evetScale >= maxScale - 0.5){
+          btnHayir.disabled = true;
+          btnHayir.setAttribute('aria-disabled','true');
+          btnHayir.textContent = 'Artık olmaz 🙂';
+        }
+      }
+
+      function rand(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+      btnHayir.addEventListener('click', () => {
+        noClicks++;
+        nudgeButtons();
+      });
+
+      btnEvet.addEventListener('click', () => {
+        // Başarı ekranını aç
+        success.classList.add('show');
+        success.setAttribute('aria-hidden','false');
+
+        // Basit konfeti üret
+        spawnConfetti(120);
+      });
+
+      function spawnConfetti(n){
+        confettiWrap.innerHTML = '';
+        const W = window.innerWidth;
+        for(let i=0;i<n;i++){
+          const piece = document.createElement('div');
+          piece.className='piece';
+          const x = (Math.random()*W - W/2) + 'px';
+          const r = (Math.random()*520 - 260) + 'deg';
+          const d = (Math.random()*1800 + 900) + 'ms';
+          piece.style.left = (Math.random()*100)+'%';
+          piece.style.background = randomColor();
+          piece.style.setProperty('--x', x);
+          piece.style.setProperty('--r', r);
+          piece.style.animationDuration = d;
+          piece.style.opacity = (Math.random()*0.5 + 0.6).toFixed(2);
+          confettiWrap.appendChild(piece);
+        }
+      }
+
+      function randomColor(){
+        const palette = ['#22c55e','#a7f3d0','#86efac','#34d399','#f43f5e','#60a5fa','#fbbf24','#f472b6','#c084fc','#fca5a5'];
+        return palette[Math.floor(Math.random()*palette.length)];
+      }
+
+      // Erişilebilirlik: Klavyeyle Hayır'a basılırsa da çalışsın
+      btnHayir.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); btnHayir.click(); }
+      });
+      btnEvet.addEventListener('keydown', (e)=>{
+        if(e.key==='Enter' || e.key===' '){ e.preventDefault(); btnEvet.click(); }
+      });
+    })();
+  </script>
+</body>
+</html>
